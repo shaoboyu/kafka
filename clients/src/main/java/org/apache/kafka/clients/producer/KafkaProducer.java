@@ -810,7 +810,12 @@ public class KafkaProducer<K, V> implements Producer<K, V> {
         TopicPartition tp = null;
         try {
             // first make sure the metadata for the topic is available
+            //在send之前,会先读取metadata.如果metadata读不到,会一直阻塞在那,直到超时,抛出TimeoutException
             ClusterAndWaitTime clusterAndWaitTime = waitOnMetadata(record.topic(), record.partition(), maxBlockTimeMs);
+            //在这下手
+            //metadata会不断的更新,但不防碍我们变更数据
+
+
             long remainingWaitMs = Math.max(0, maxBlockTimeMs - clusterAndWaitTime.waitedOnMetadataMs);
             Cluster cluster = clusterAndWaitTime.cluster;
             byte[] serializedKey;
@@ -916,6 +921,7 @@ public class KafkaProducer<K, V> implements Producer<K, V> {
         do {
             log.trace("Requesting metadata update for topic {}.", topic);
             metadata.add(topic);
+            //进行更新metadata
             int version = metadata.requestUpdate();
             sender.wakeup();
             try {

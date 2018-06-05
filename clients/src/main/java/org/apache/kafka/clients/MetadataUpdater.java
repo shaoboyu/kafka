@@ -32,7 +32,7 @@ import java.util.List;
 public interface MetadataUpdater {
 
     /**
-     * Gets the current cluster info without blocking.
+     * 在不阻塞的情况下获取当前群集信息
      */
     List<Node> fetchNodes();
 
